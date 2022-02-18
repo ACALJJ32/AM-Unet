@@ -1,0 +1,40 @@
+# name: HDRUNet_tanh_l1_bs_16_ps_160
+name: ADNet_small_img_20220214
+model: condition
+distortion: sr
+scale: 1
+gpu_ids: [0]
+
+datasets:
+  test_1:  # the 1st test dataset
+    # name: 000_Valid_Frame_FirstStage
+    # mode: LQ_condition
+    name: ADNet_small_img_20220216_test
+    mode: LDRs
+    # dataroot_LQ: /media/test/8026ac84-a5ee-466b-affa-f8c81a423d9b/lfy/HDR/HDR_dataset/NTIRE22_HDR_valid_input
+
+    dataroot_LDRs: /media/test/8026ac84-a5ee-466b-affa-f8c81a423d9b/lfy/HDR/HDR_dataset/NTIRE22_HDR_valid_input
+
+    # dataroot_short: /media/test/8026ac84-a5ee-466b-affa-f8c81a423d9b/lfy/HDR/HDR_dataset/test/short
+    # dataroot_medium: /media/test/8026ac84-a5ee-466b-affa-f8c81a423d9b/lfy/HDR/HDR_dataset/test/medium
+    # dataroot_long: /media/test/8026ac84-a5ee-466b-affa-f8c81a423d9b/lfy/HDR/HDR_dataset/test/long
+    # dataroot_exp: /media/test/8026ac84-a5ee-466b-affa-f8c81a423d9b/lfy/HDR/HDR_dataset/test/exposures
+
+    condition: image
+    
+#### network structures
+network_G:
+  # which_model_G: HDRUNet
+  which_model_G: ADNet
+  in_nc: 3
+  out_nc: 3
+  nf: 64 
+  act_type: relu 
+  
+#### path
+path:
+  root: ./
+  # pretrain_model_G: ../experiments/HDRUNet_tanh_l1_bs_16_ps_160/models/latest_G.pth
+  # pretrain_model_G: ../pretrained_models/pretrained_model.pth
+  # pretrain_model_G: ../experiments/ADNet_20220213/models/latest_G.pth
+  pretrain_model_G: ../experiments/ADNet_small_img_20220214/models/85000_G.pth

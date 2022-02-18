@@ -1,0 +1,89 @@
+#### general settings
+# name: HDRUNet_tanh_l1_bs_16_ps_160
+name: ADNet_small_img_l1_20220216
+model: condition
+use_tb_logger: true
+distortion: sr
+scale: 1
+gpu_ids: [2]
+
+#### datasets
+datasets:
+  train:
+    name: LDRs2HDR
+    # mode: LQGT_condition
+    mode: LDRsToHDR
+    # dataroot_LQ: /media/test/8026ac84-a5ee-466b-affa-f8c81a423d9b/lfy/HDR/HDR_dataset/train_1494/medium
+
+    dataroot_short: /media/test/8026ac84-a5ee-466b-affa-f8c81a423d9b/lfy/HDR/HDR_dataset/train_1494/short_sub
+    dataroot_medium: /media/test/8026ac84-a5ee-466b-affa-f8c81a423d9b/lfy/HDR/HDR_dataset/train_1494/medium_sub
+    dataroot_long: /media/test/8026ac84-a5ee-466b-affa-f8c81a423d9b/lfy/HDR/HDR_dataset/train_1494/long_sub
+    dataroot_exp: /media/test/8026ac84-a5ee-466b-affa-f8c81a423d9b/lfy/HDR/HDR_dataset/train_1494/exposures
+
+    dataroot_GT: /media/test/8026ac84-a5ee-466b-affa-f8c81a423d9b/lfy/HDR/HDR_dataset/train_1494/gt_sub
+    dataroot_ratio: /media/test/8026ac84-a5ee-466b-affa-f8c81a423d9b/lfy/HDR/HDR_dataset/train_1494/alignratio
+    use_shuffle: true
+    n_workers: 8
+    batch_size: 8
+    GT_size: 256
+    use_flip: true
+    use_rot: true
+    condition: image
+  val:
+    name: LDRs2HDR
+    # mode: LQGT_condition
+    mode: LDRsToHDR
+    # dataroot_LQ: /media/test/8026ac84-a5ee-466b-affa-f8c81a423d9b/lfy/HDR/HDR_dataset/val_30/medium
+
+    dataroot_short: /media/test/8026ac84-a5ee-466b-affa-f8c81a423d9b/lfy/HDR/HDR_dataset/val_30/short
+    dataroot_medium: /media/test/8026ac84-a5ee-466b-affa-f8c81a423d9b/lfy/HDR/HDR_dataset/val_30/medium
+    dataroot_long: /media/test/8026ac84-a5ee-466b-affa-f8c81a423d9b/lfy/HDR/HDR_dataset/val_30/long
+    dataroot_exp: /media/test/8026ac84-a5ee-466b-affa-f8c81a423d9b/lfy/HDR/HDR_dataset/val_30/exposures
+
+    dataroot_GT: /media/test/8026ac84-a5ee-466b-affa-f8c81a423d9b/lfy/HDR/HDR_dataset/val_30/gt
+    dataroot_ratio: /media/test/8026ac84-a5ee-466b-affa-f8c81a423d9b/lfy/HDR/HDR_dataset/val_30/alignratio
+
+    batch_size: 1
+    GT_size: 1060
+    condition: image
+
+#### network structures
+network_G:
+  # which_model_G: HDRUNet
+  which_model_G: ADNet
+  in_nc: 3
+  out_nc: 3
+  nf: 64 
+  act_type: relu 
+
+#### path
+path:
+  root: ./
+  # pretrain_model_G: ../experiments/...
+  strict_load: false
+  resume_state: ../experiments/ADNet_small_img_l1_20220216/training_state/85000.state
+  iter: '85000'
+
+#### training settings: learning rate scheme, loss
+train:
+  lr_G: !!float 2e-4
+  lr_scheme: MultiStepLR # MultiStepLR | CosineAnnealingLR_Restart
+  beta1: 0.9
+  beta2: 0.99
+  niter: 600000 # 600000 
+  warmup_iter: -1  # no warm up
+
+  lr_scheme: MultiStepLR
+  lr_steps: [200000, 400000, 600000, 800000]
+  lr_gamma: 0.5
+
+  pixel_criterion: l1 # l1 | l2 | tanh_l1 | tanh_l2
+  pixel_weight: 1.0
+
+  manual_seed: 10
+  val_freq: !!float 5e3
+
+#### logger
+logger:
+  print_freq: 100
+  save_checkpoint_freq: !!float 5e3
