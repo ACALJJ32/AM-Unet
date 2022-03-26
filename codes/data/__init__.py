@@ -35,6 +35,10 @@ def create_dataset(dataset_opt):
         from data.LDRsToHDR_dataset import LDRsToHDR_dataset as D
     elif mode == 'LDRs':
         from data.LDRs_dataset import LDRs_dataset as D
+    elif mode == '6LDRsToHDR':
+        from data.LDRsToHDR_data import LDRsToHDR_dataset as D
+    elif mode == '6LDRs':
+        from data.LDRs_data import LDRs_dataset as D
     else:
         raise NotImplementedError('Dataset [{:s}] is not recognized.'.format(mode))
     dataset = D(dataset_opt)

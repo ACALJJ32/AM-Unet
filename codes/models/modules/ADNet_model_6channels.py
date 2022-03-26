@@ -1,4 +1,3 @@
-# from data.util import ev_alignment
 import numpy as np
 import torch
 import torch.nn as nn
@@ -91,7 +90,6 @@ class Pyramid(nn.Module):
 
 
 class SpatialAttentionModule(nn.Module):
-
     def __init__(self, n_feats):
         super(SpatialAttentionModule, self).__init__()
         self.att1 = nn.Conv2d(n_feats * 2, n_feats * 2, kernel_size=3, padding=1, bias=True)
@@ -105,7 +103,6 @@ class SpatialAttentionModule(nn.Module):
 
 
 class ADNet(nn.Module):
-
     def __init__(self, nChannel, nDenselayer, nFeat, growthRate, align_version='v0'):
         super(ADNet, self).__init__()
         self.n_channel = nChannel
@@ -147,34 +144,12 @@ class ADNet(nn.Module):
             nn.ReLU(inplace=True)
         )
         self.relu = nn.LeakyReLU(inplace=True)
-    
-    def exp_LDRs(self, img, expo, gamma=2.2):
-        '''Map the LDR inputs into the HDR domain'''
-        return img ** gamma / expo
-    
-    def ev_alignment(self, img, expo, gamma):
-        '''Map the LDR inputs into the HDR domain'''
-        return ((img ** gamma) * 2.0**(-1*expo))**(1/gamma)
-    
-    def expo_correct(self, img, floating_exposures):
-        gamma=2.24
-        img = img.permute(1,2,3,0)  # ????
-        img_corrected = (((img**gamma)*2.0**(-1*floating_exposures))**(1/gamma))
-        img_corrected = img_corrected.permute(3,0,1,2)
-        return img_corrected
 
-    def forward(self, x, exp):
-        # x: [1,3,3,1060,1900]
-        x1_t = x[:,0,:,:,:]
-        x2_t = x[:,1,:,:,:]
-        x3_t = x[:,2,:,:,:]
-        # print(x1_t)
-        
-        # map the LDR inputs into the HDR domain
-        x1_l = self.expo_correct(x1_t, exp[:,0])
-        x2_l = x2_t
-        x3_l = self.expo_correct(x3_t, exp[:,2])
-
+    def forward(self, x1, x2, x3):
+        # print(x1.shape) # torch.Size([1, 6, 256, 256])
+        x1_t, x1_l = x1[:,0:3,...], x1[:,3:,...] # torch.Size([8, 3, 256, 256])
+        x2_t, x2_l = x2[:,0:3,...], x2[:,3:,...]
+        x3_t, x3_l = x3[:,0:3,...], x3[:,3:,...]
         # pyramid features of linear domain
         f1_l = self.pyramid_feats(x1_l)
         f2_l = self.pyramid_feats(x2_l)

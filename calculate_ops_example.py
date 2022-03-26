@@ -2,9 +2,7 @@ import torch
 import torch.nn as nn
 import numpy as np
 from complexity_metrics import get_gmacs_and_params, get_runtime
-# from toy_model import ToyHDRModel
-# import codes.models.modules.ADNet_model as ADNet_model
-import codes.models.dcnv2.dcn_v2 as dcn_v2
+import codes.models.modules.adnet as adnet
 import argparse
 
 parser = argparse.ArgumentParser()
@@ -13,16 +11,20 @@ args = parser.parse_args()
 write_path=args.write_path
 
 # Load a pytorch model
-# model = ToyHDRModel()
-# model = ADNet_model.ADNet(6, 5, 64, 32)
-model = dcn_v2.PCD_Align()
+model = adnet.ADNetv2(6, 5, 64, 32)
 model.eval()
 
 # Calculate MACs and Parameters
-input_size = ((1,6,256,256), (1,6,256,256), (1,6,256,256))
 
-total_macs, total_params = get_gmacs_and_params(model, input_size=input_size)
-mean_runtime = get_runtime(model, input_size=(1,6,256,256))
+height = 1060
+width = 1900
+scale = 4
+
+total_macs, total_params = get_gmacs_and_params(model, input_size=(1, 6, height // scale, width // scale))
+mean_runtime = get_runtime(model, input_size=(1, 6, height // scale, width // scale))
+
+total_macs = total_macs * scale * scale
+mean_runtime = mean_runtime * scale * scale
 
 print(total_macs)
 print(total_params)

@@ -102,7 +102,11 @@ class GenerationModel(BaseModel):
         self.short_ldr = data['Short'].to(self.device)  # short
         self.medium_ldr = data['Medium'].to(self.device) # medium
         self.long_ldr = data['Long'].to(self.device) # long
-        
+        # self.ldrs = data['img_LDRs'].to(self.device)
+        # self.exp = data['float_exp']
+        # print(self.exp)
+        # print(self.exp[:,0])
+
         if need_GT:
             self.real_H = data['GT'].to(self.device)  # GT
 
@@ -119,6 +123,8 @@ class GenerationModel(BaseModel):
         self.optimizer_G.zero_grad()
         # self.fake_H = self.netG((self.var_L, self.var_cond))
         self.fake_H = self.netG(self.short_ldr, self.medium_ldr, self.long_ldr)
+        # self.fake_H = self.netG(self.ldrs)
+        # self.fake_H = self.netG(self.ldrs, self.exp)
         
         hdr_linear_ref = self.fake_H ** self.gamma
         hdr_linear_res = self.real_H ** self.gamma
@@ -140,6 +146,9 @@ class GenerationModel(BaseModel):
             # self.fake_H = self.netG((self.var_L, self.var_cond))
             # print(self.short_ldr.shape) # torch.Size([1, 6, 1060, 1900])
             self.fake_H = self.netG(self.short_ldr, self.medium_ldr, self.long_ldr)
+            # self.fake_H = self.netG(self.ldrs)
+            # self.fake_H = self.netG(self.ldrs, self.exp)
+            
         self.netG.train()
 
     def get_current_log(self):
@@ -151,6 +160,7 @@ class GenerationModel(BaseModel):
         out_dict['Short'] = self.short_ldr.detach()[0].float().cpu()
         out_dict['Medium'] = self.medium_ldr.detach()[0].float().cpu()
         out_dict['Long'] = self.long_ldr.detach()[0].float().cpu()
+        # out_dict['img_LDRs'] = self.ldrs.detach()[0].float().cpu()
 
         out_dict['Result'] = self.fake_H.detach()[0].float().cpu()
         

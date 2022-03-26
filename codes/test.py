@@ -13,7 +13,7 @@ import numpy as np
 
 #### options
 parser = argparse.ArgumentParser()
-parser.add_argument('--opt', type=str, default='/media/test/8026ac84-a5ee-466b-affa-f8c81a423d9b/lfy/HDR/NTIRE_HDR/codes/options/test/test_HDRUNet.yml', help='Path to options YMAL file.')
+parser.add_argument('--opt', type=str, default='./options/test/test_HDRUNet.yml', help='Path to options YMAL file.')
 opt = option.parse(parser.parse_args().opt, is_train=False)
 opt = option.dict_to_nonedict(opt)
 

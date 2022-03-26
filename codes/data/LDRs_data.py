@@ -14,6 +14,7 @@ class LDRs_dataset(data.Dataset):
         self.LDRs_env = None  # environment for lmdb
         self.data_type = opt['data_type']
         # read image list from lmdb or image files
+        print('*******************')
         print(opt['dataroot_LDRs'])
         self.sizes_ldr, self.paths_ldr = util.get_image_paths(self.data_type, opt['dataroot_LDRs'])
         # print(self.paths_ldr)
@@ -50,21 +51,28 @@ class LDRs_dataset(data.Dataset):
         ldr_images.append(long_ldr_images)
         ldr_images = np.array(ldr_images)
 
-        img0 = ldr_images[0].astype(np.float32).transpose(2, 0, 1)
-        img1 = ldr_images[1].astype(np.float32).transpose(2, 0, 1)
-        img2 = ldr_images[2].astype(np.float32).transpose(2, 0, 1)
+        # ldr images process
+        s_gamma = 2.24
+        if random.random() < 0.3:
+            s_gamma += (random.random() * 0.2 - 0.1)
+        image_short = util.ev_alignment(ldr_images[0], floating_exposures[0], s_gamma)
+        # image_medium = ev_alignment(ldr_images[1], floating_exposures[1], 2.24)
+        image_medium = ldr_images[1]
+        image_long = util.ev_alignment(ldr_images[2], floating_exposures[2], s_gamma)
+
+        image_short_concat = np.concatenate((image_short, short_ldr_images), 2)  
+        image_medium_concat = np.concatenate((image_medium, medium_ldr_images), 2)
+        image_long_concat = np.concatenate((image_long, long_ldr_images), 2)
+
+        img0 = image_short_concat.astype(np.float32).transpose(2, 0, 1)
+        img1 = image_medium_concat.astype(np.float32).transpose(2, 0, 1)
+        img2 = image_long_concat.astype(np.float32).transpose(2, 0, 1)
 
         img0 = torch.from_numpy(img0)
         img1 = torch.from_numpy(img1)
         img2 = torch.from_numpy(img2)
 
-        img0 =img0.unsqueeze(0) # torch.Size([1, 6, 256, 256])
-        img1 =img1.unsqueeze(0)
-        img2 =img2.unsqueeze(0)
-        img_ldrs = torch.cat((img0, img1, img2))
-       
-        sample = {'img_LDRs': img_ldrs, 'float_exp':floating_exposures, 'short_path': short_ldr_paths}
-        # return {'Short': img0, 'Medium': img1, 'Long': img2,  'short_path': short_ldr_paths}
+        return {'Short': img0, 'Medium': img1, 'Long': img2,  'short_path': short_ldr_paths}
         
     def __len__(self):
         return len(self.paths_exposures)

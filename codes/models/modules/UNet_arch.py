@@ -57,14 +57,14 @@ class HDRUNet(nn.Module):
         # x[0]: img; x[1]: cond
         # x[0]: short; x[1]: medium; x[2]: long
         # print(x[0].shape) # torch.Size([16, 6, 160, 160])
-        mask = self.mask_est(x[0])
+        mask = self.mask_est(x)
 
-        cond = self.cond_first(x[1])   
+        cond = self.cond_first(x)   
         cond1 = self.CondNet1(cond)
         cond2 = self.CondNet2(cond)
         cond3 = self.CondNet3(cond)
 
-        fea0 = self.act(self.conv_first(x[0]))
+        fea0 = self.act(self.conv_first(x))
 
         fea0 = self.SFT_layer1((fea0, cond1))
         fea0 = self.act(self.HR_conv1(fea0))
@@ -84,5 +84,5 @@ class HDRUNet(nn.Module):
         out = self.act(self.HR_conv2(out))
 
         out = self.conv_last(out)
-        out = mask * x[0] + out
+        out = mask * x + out
         return out

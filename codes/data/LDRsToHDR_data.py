@@ -47,17 +47,16 @@ class LDRsToHDR_dataset(data.Dataset):
         ratio_path = osp.join(self.folder_ratio, filename)
         alignratio = np.load(ratio_path).astype(np.float32)
 
-        # get GT image
-        GT_path = self.paths_GT[index]
-        img_GT = util.read_imgdata(GT_path, ratio=alignratio)
-
         # get exposures
         exp_name = osp.basename(short_ldr_paths)[:4] + "_exposures.npy"
         exp_path = osp.join(self.paths_exposures, exp_name)
         exposures = np.load(exp_path)
         floating_exposures = exposures - exposures[1]
 
-        ## random crop
+        # get GT image
+        GT_path = self.paths_GT[index]
+        img_GT = util.read_imgdata(GT_path, ratio=alignratio)
+
         if self.opt['phase'] == 'train':
             
             H, W, C = short_ldr_images.shape
@@ -108,10 +107,22 @@ class LDRsToHDR_dataset(data.Dataset):
         ldr_images.append(medium_ldr_images)
         ldr_images.append(long_ldr_images)
         ldr_images = np.array(ldr_images)
+        # ldr images process
+        s_gamma = 2.24
+        if random.random() < 0.3:
+            s_gamma += (random.random() * 0.2 - 0.1)
+        image_short = util.ev_alignment(ldr_images[0], floating_exposures[0], s_gamma)
+        # image_medium = ev_alignment(ldr_images[1], floating_exposures[1], 2.24)
+        image_medium = ldr_images[1]
+        image_long = util.ev_alignment(ldr_images[2], floating_exposures[2], s_gamma)
 
-        img0 = ldr_images[0].astype(np.float32).transpose(2, 0, 1)
-        img1 = ldr_images[1].astype(np.float32).transpose(2, 0, 1)
-        img2 = ldr_images[2].astype(np.float32).transpose(2, 0, 1)
+        image_short_concat = np.concatenate((image_short, short_ldr_images), 2)  
+        image_medium_concat = np.concatenate((image_medium, medium_ldr_images), 2)
+        image_long_concat = np.concatenate((image_long, long_ldr_images), 2)
+
+        img0 = image_short_concat.astype(np.float32).transpose(2, 0, 1)
+        img1 = image_medium_concat.astype(np.float32).transpose(2, 0, 1)
+        img2 = image_long_concat.astype(np.float32).transpose(2, 0, 1)
         img_GT = img_GT.astype(np.float32).transpose(2, 0, 1)
 
         img0 = torch.from_numpy(img0) # [6,256,256]
@@ -119,13 +130,7 @@ class LDRsToHDR_dataset(data.Dataset):
         img2 = torch.from_numpy(img2)
         img_GT = torch.from_numpy(img_GT)
         # print(img_GT.shape) # (3, 160, 160)
-
-        img0 =img0.unsqueeze(0) # torch.Size([1, 6, 256, 256])
-        img1 =img1.unsqueeze(0)
-        img2 =img2.unsqueeze(0)
-        img_ldrs = torch.cat((img0, img1, img2))
-       
-        sample = {'img_LDRs': img_ldrs, 'GT': img_GT, 'float_exp':floating_exposures, 'GT_path': GT_path}
+        sample = {'Short': img0, 'Medium': img1, 'Long': img2, 'GT': img_GT, 'GT_path': GT_path}
         # print(sample)
         return sample
 

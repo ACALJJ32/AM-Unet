@@ -1,18 +1,19 @@
 #### general settings
 # name: HDRUNet_tanh_l1_bs_16_ps_160
-name: ADNet_small_img_l1_20220216
+# name: ADNet_small_img_l1_20220216
+name: Delete_0307
 model: condition
 use_tb_logger: true
 distortion: sr
 scale: 1
-gpu_ids: [2]
+gpu_ids: [3]
 
 #### datasets
 datasets:
   train:
     name: LDRs2HDR
     # mode: LQGT_condition
-    mode: LDRsToHDR
+    mode: 6LDRsToHDR
     # dataroot_LQ: /media/test/8026ac84-a5ee-466b-affa-f8c81a423d9b/lfy/HDR/HDR_dataset/train_1494/medium
 
     dataroot_short: /media/test/8026ac84-a5ee-466b-affa-f8c81a423d9b/lfy/HDR/HDR_dataset/train_1494/short_sub
@@ -32,7 +33,7 @@ datasets:
   val:
     name: LDRs2HDR
     # mode: LQGT_condition
-    mode: LDRsToHDR
+    mode: 6LDRsToHDR
     # dataroot_LQ: /media/test/8026ac84-a5ee-466b-affa-f8c81a423d9b/lfy/HDR/HDR_dataset/val_30/medium
 
     dataroot_short: /media/test/8026ac84-a5ee-466b-affa-f8c81a423d9b/lfy/HDR/HDR_dataset/val_30/short
@@ -49,8 +50,7 @@ datasets:
 
 #### network structures
 network_G:
-  # which_model_G: HDRUNet
-  which_model_G: ADNet
+  which_model_G: ADNetv2
   in_nc: 3
   out_nc: 3
   nf: 64 
@@ -61,8 +61,8 @@ path:
   root: ./
   # pretrain_model_G: ../experiments/...
   strict_load: false
-  resume_state: ../experiments/ADNet_small_img_l1_20220216/training_state/85000.state
-  iter: '85000'
+  # resume_state: ../experiments/ADNet_small_img_l1_20220216/training_state/85000.state
+  # iter: '85000'
 
 #### training settings: learning rate scheme, loss
 train:
@@ -80,7 +80,7 @@ train:
   pixel_criterion: l1 # l1 | l2 | tanh_l1 | tanh_l2
   pixel_weight: 1.0
 
-  manual_seed: 10
+  manual_seed: 100
   val_freq: !!float 5e3
 
 #### logger

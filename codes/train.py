@@ -32,7 +32,7 @@ def init_dist(backend='nccl', **kwargs):
 def main():
     #### options
     parser = argparse.ArgumentParser()
-    parser.add_argument('--opt', default='/media/test/8026ac84-a5ee-466b-affa-f8c81a423d9b/lfy/HDR/NTIRE_HDR/codes/options/train/train_HDRUNet.yml', type=str, help='Path to option YMAL file.')
+    parser.add_argument('--opt', default='./options/train/train_HDRUNet.yml', type=str, help='Path to option YMAL file.')
     parser.add_argument('--launcher', choices=['none', 'pytorch'], default='none',
                         help='job launcher')
     parser.add_argument('--local_rank', type=int, default=0)
@@ -243,3 +243,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+# CUDA_VISIBLE_DEVICES=2 python train.py
