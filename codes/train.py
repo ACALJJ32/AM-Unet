@@ -32,7 +32,7 @@ def init_dist(backend='nccl', **kwargs):
 def main():
     #### options
     parser = argparse.ArgumentParser()
-    parser.add_argument('--opt', default='./options/train/train_HDRUNet.yml', type=str, help='Path to option YMAL file.')
+    parser.add_argument('--opt', default='./options/train/train_HDR.yml', type=str, help='Path to option YMAL file.')
     parser.add_argument('--launcher', choices=['none', 'pytorch'], default='none',
                         help='job launcher')
     parser.add_argument('--local_rank', type=int, default=0)

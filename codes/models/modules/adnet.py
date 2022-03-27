@@ -153,7 +153,6 @@ class ADNetv2(nn.Module):
         x1_t, x1_l = self.check_image_size(x1_t), self.check_image_size(x1_l)
         x2_t, x2_l = self.check_image_size(x2_t), self.check_image_size(x2_l)
         x3_t, x3_l = self.check_image_size(x3_t), self.check_image_size(x3_l)
-
         
         # pyramid features of linear domain
         f1_l = self.pyramid_feats(x1_l)

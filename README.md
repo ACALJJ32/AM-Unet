@@ -1,32 +1,10 @@
-# HDRUNet [[Paper Link]](http://arxiv.org/abs/2105.13084)
+# AM-Unet: Attention-guided Multi-scale Approach for High Dynamic Range Imaging
+By Jinjing Li, Chenghua Li, Fangya Li, Ruipeng Gang, Qian Zheng and Yuntian Cao
 
-### HDRUNet: Single Image HDR Reconstruction with Denoising and Dequantization
-By Xiangyu Chen, Yihao Liu, Zhengwen Zhang, [Yu Qiao](https://scholar.google.com/citations?user=gFtI-8QAAAAJ&hl=zh-CN) and [Chao Dong](https://scholar.google.com.hk/citations?user=OSDCB0UAAAAJ&hl=zh-CN)
-
-#### We won the second place in [NTIRE2021 HDR Challenge](https://data.vision.ee.ethz.ch/cvl/ntire21/) ([Track1: Single Frame](https://competitions.codalab.org/competitions/28161)). The paper is accepted to CVPR2021 Workshop.
-
-<img src="https://raw.githubusercontent.com/chxy95/HDRUNet/master/images/introduction.jpg"/>
-
-#### BibTeX
-
-    @inproceedings{chen2021hdrunet,
-      title={HDRUnet: Single image hdr reconstruction with denoising and dequantization},
-      author={Chen, Xiangyu and Liu, Yihao and Zhang, Zhengwen and Qiao, Yu and Dong, Chao},
-      booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
-      pages={354--363},
-      year={2021}
-    }
-
-## Overview
-Overview of the network:
-
-<img src="https://raw.githubusercontent.com/chxy95/HDRUNet/master/images/Network_Structure.png" width="600"/>
-
-Overview of the loss function:
-
-```
-Tanh_L1(Y, H) = |Tanh(Y) - Tanh(H)|
-```
+## Overview of the network
+<div align="center">
+  <img src='./resources/network.png'>
+</div>
 
 ## Getting Started
 
@@ -44,18 +22,28 @@ https://competitions.codalab.org/competitions/28161#participate-get-data
 #### It is strongly recommended to use the data provided by the competition organizer for training and testing, or you need at least a basic understanding of the competition data. Otherwise, you may not get the desired result.
 
 ### Configuration
+
 ```
 pip install -r requirements.txt
 ```
 
-### How to test
+### Compile DCNv2
+```
+cd codes/models/dcnv2
+python setup.py build develop  # build in your conda virtual environment
+```
 
-- Modify `dataroot_LQ` and `pretrain_model_G` (you can also use the pretrained model which is provided in the `./pretrained_model`) in `./codes/options/test/test_HDRUNet.yml`, then run
+### How to test for ntire2022 hdr track2
+- download pretrained model
+Google Drive: https://drive.google.com/file/d/1wRsc9HQFcbT7nEFS50cfL9N3bql9cuGV/view?usp=sharing
+
+- put this model 210000_G.pth in './experiments/Delete_0307/models', then run: 
+
 ```
 cd codes
-python test.py -opt options/test/test_HDRUNet.yml
+python test.py -opt options/test/test_HDR.yml
 ```
-The test results will be saved to `./results/testset_name`.
+The test results will be saved to `./results/<your result name>`.
 
 ### How to train
 
@@ -65,12 +53,22 @@ cd scripts
 python extract_subimgs_single.py
 ```
 
-- Modify `dataroot_LQ` and `dataroot_GT` in `./codes/options/train/train_HDRUNet.yml`, then run
+- Modify `dataroot_LQ` and `dataroot_GT` in `./codes/options/train/train_HDR.yml`, then run:
+
 ```
 cd codes
-python train.py -opt options/train/train_HDRUNet.yml
+python train.py -opt options/train/train_HDR.yml
 ```
+
 The models and training states will be saved to `./experiments/name`.
+
+## Calculate ops
+- Because of storage limitations, we use (1, 6, 1060 // 4, 1900 // 4) as inputs. When submitting readme.txt, we use total_macs * 16 and mean_runtime * 16 as our result. You can try to set the scale=1 in calculate_ops_example.py if your GPU allowed.
+
+- run: 
+```
+python calculate_ops_example.py
+```
 
 ### Visualization
 
@@ -82,4 +80,4 @@ python tonemapped_visualization.py
 to visualize the images.
 
 ## Acknowledgment
-The code is inspired by [BasicSR](https://github.com/xinntao/BasicSR).
+The code is inspired by [HDRUNet](https://github.com/chxy95/HDRUNet).

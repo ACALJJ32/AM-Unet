@@ -11,7 +11,6 @@ datasets:
     # dataroot_LQ: /media/test/8026ac84-a5ee-466b-affa-f8c81a423d9b/lfy/HDR/HDR_dataset/NTIRE22_HDR_valid_input
     # dataroot_LDRs: /media/test/8026ac84-a5ee-466b-affa-f8c81a423d9b/lfy/HDR/HDR_dataset/NTIRE22_HDR_valid_input
     dataroot_LDRs: /media/test/8026ac84-a5ee-466b-affa-f8c81a423d9b/ntire2022/HDR_track2/test/test
-
     condition: image
     
 #### network structures

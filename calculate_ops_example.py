@@ -1,6 +1,3 @@
-import torch
-import torch.nn as nn
-import numpy as np
 from complexity_metrics import get_gmacs_and_params, get_runtime
 import codes.models.modules.adnet as adnet
 import argparse
@@ -18,7 +15,8 @@ model.eval()
 
 height = 1060
 width = 1900
-scale = 4
+
+scale = 4  # You can try to modify this to 1 if your GPU allowed.
 
 total_macs, total_params = get_gmacs_and_params(model, input_size=(1, 6, height // scale, width // scale))
 mean_runtime = get_runtime(model, input_size=(1, 6, height // scale, width // scale))
