@@ -37,7 +37,9 @@ python setup.py build develop  # build in your conda virtual environment
 - download pretrained model
 Google Drive: https://drive.google.com/file/d/1wRsc9HQFcbT7nEFS50cfL9N3bql9cuGV/view?usp=sharing
 
-- put this model 210000_G.pth in './experiments/Delete_0307/models', then run: 
+- put this model 210000_G.pth in './experiments/Delete_0307/models', 
+
+- Prepare the data. Modify the `dataroot_LDRs` in `./codes/options/test/test_HDR.yml`, then run: 
 
 ```
 cd codes
